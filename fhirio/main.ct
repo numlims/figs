@@ -1,0 +1,140 @@
+# main holds the fhirio cli
+
+``//__main__.py:
+``import``
+``main``
+
+
+sys.exit(main())
+``
+
+main holds a cli for fhirio. it takes a fhir file, resource index and
+what should be returned.
+
+``/main:
+def main():
+    ``.``
+``
+
+parse the arguments.
+
+``
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("file", help="fhir json file")
+    parser.add_argument("index", help="index of resource, * for all")
+    parser.add_argument("what", help="sampleid|patientid|locationpath|...")
+    parser.add_argument("--csv", help="write output to named csv file")
+``
+
+parse the arguments.
+
+``
+    args = parser.parse_args()
+``
+
+get the whats.
+
+``
+    what = args.what.split("|")
+``
+
+read the fhir.
+
+``
+    jsonin = None
+    with open(os.path.join(dir, file), "r", encoding=encoding) as f:    
+        jsonin = json.load(f)
+``
+
+get the entries.
+
+``
+    entries = dig(jsonin, "entry")
+``
+
+get the entries queried by the user, if * all, if a number, the entry
+at this index.
+
+``
+    if args.index == "*":
+        searchentries = entries
+    else:
+        searchentries = [ entries[int(args.index)] ]
+``
+
+iterate the entries and extract what was asked for.
+
+``
+    out = []
+    for entry in searchentries:
+        ``.``
+``
+
+get the resource, make an empty output dict.
+
+``
+        res = fio.resource(entry)
+        row = {}
+``
+
+get what was asked for.
+
+``
+        if "category" in what:
+            row["category"] = fio.category(res)
+        if "parent_fhirid" in what:
+            row["parent_fhirid"] = fio.parent_fhirid(res)
+        if "parent_sampleid" in what:
+            row["parent_sampleid"] = fio.parent_sampleid(res)
+        if "patientid" in what:
+            row["patientid"] = fio.patientid(res, "LIMSPSN")
+        if "orga" in what:
+            row["orga"] = fio.orga(res)
+        if "restamount" in what:
+            row["restamount"] = fio.restamount(res)
+        if "locationpath" in what:
+            row["locationpath"] = fio.locationpath(res)
+        if "sampleid" in what:
+            row["sampleid"] = fio.sampleid(res, "SAMPLEID")
+        if "resource_type" in what:
+            row["resource_type"] = fio.resource_type(res)
+        if "type" in what:
+            row["type"] = fio.type(res)
+        if "update_with_overwrite" in what:
+            row["update_with_overwrite"] = fio.update_with_overwrite(res)
+``
+
+after the loop, return the out dict as csv file or printed json.
+
+``/main
+    ``csv``
+    ``print json``
+``
+
+if csv wished, open the given file, write the keys of the first dict
+as header, then write the content of each dict.
+
+``/main/csv:
+    if args.csv is not None:
+        with open(args.csv, "w") as f:
+            writer = csv.writer(f)
+            writer.writerow(list(out[0].keys()))
+            for d in out:
+                writer.writerow(list(d.values()))
+``
+
+if json wished, print it.
+
+``/main/print json:
+    else:
+        print(json.dumps(out, default=str))
+``
+
+import.
+
+``/import:
+    import fhirio as fio
+    import json
+    import argparse
+``
