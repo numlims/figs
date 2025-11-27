@@ -3,7 +3,8 @@
 ``//__main__.py:
 ``import``
 ``main``
-
+``fillpatient``
+``fillspecimen``
 
 sys.exit(main())
 ``
@@ -21,10 +22,11 @@ parse the arguments.
 ``
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("file", help="fhir json file")
     parser.add_argument("index", help="index of resource, * for all")
     parser.add_argument("what", help="sampleid|patientid|locationpath|...")
+    parser.add_argument("file", help="fhir json file")    
     parser.add_argument("--csv", help="write output to named csv file")
+    parser.add_argument("-e", help="input file encoding")
 ``
 
 parse the arguments.
@@ -43,7 +45,7 @@ read the fhir.
 
 ``
     jsonin = None
-    with open(os.path.join(dir, file), "r", encoding=encoding) as f:    
+    with open(args.file, "r", encoding=args.e) as f:    
         jsonin = json.load(f)
 ``
 
@@ -81,28 +83,17 @@ get the resource, make an empty output dict.
 get what was asked for.
 
 ``
-        if "category" in what:
-            row["category"] = fio.category(res)
-        if "parent_fhirid" in what:
-            row["parent_fhirid"] = fio.parent_fhirid(res)
-        if "parent_sampleid" in what:
-            row["parent_sampleid"] = fio.parent_sampleid(res)
-        if "patientid" in what:
-            row["patientid"] = fio.patientid(res, "LIMSPSN")
-        if "orga" in what:
-            row["orga"] = fio.orga(res)
-        if "restamount" in what:
-            row["restamount"] = fio.restamount(res)
-        if "locationpath" in what:
-            row["locationpath"] = fio.locationpath(res)
-        if "sampleid" in what:
-            row["sampleid"] = fio.sampleid(res, "SAMPLEID")
-        if "resource_type" in what:
-            row["resource_type"] = fio.resource_type(res)
-        if "type" in what:
-            row["type"] = fio.type(res)
-        if "update_with_overwrite" in what:
-            row["update_with_overwrite"] = fio.update_with_overwrite(res)
+        whatresource = fios.resource_type(res)
+        if whatresource == "Patient":
+            row = fillpatient(res, what)
+        elif whatresource == "Specimen":
+            row = fillspecimen(res, what)
+``
+
+append the row.
+
+``
+        out.append(row)
 ``
 
 after the loop, return the out dict as csv file or printed json.
@@ -122,19 +113,91 @@ as header, then write the content of each dict.
             writer.writerow(list(out[0].keys()))
             for d in out:
                 writer.writerow(list(d.values()))
+            print(args.csv)
 ``
 
 if json wished, print it.
 
 ``/main/print json:
     else:
-        print(json.dumps(out, default=str))
+        print(json.dumps(out, default=str, indent=4))
 ``
 
 import.
 
 ``/import:
-    import fhirio as fio
-    import json
-    import argparse
+from fhirio import fhirio as fio, specimen as fios, patient as fiop
+import json
+import argparse
+import sys
+from dip import dig, dis
+import csv
+``
+
+fillpatient fills patient dict from resource.
+
+``/fillpatient:
+def fillpatient(resource, what):
+    ``.``
+``
+
+fill in the fields.
+
+``
+    row = {}
+    if "full_url" in what or "*" in what:
+        row["full_url"] = fiop.full_url(resource)
+    if "update_with_overwrite" in what or "*" in what:
+        row["update_with_overwrite"] = fiop.update_with_overwrite(resource)
+    if "orga" in what or "*" in what:
+        row["orga"] = fiop.orga(resource)
+    if "patientid" in what or "*" in what:
+        row["patientid"] = fiop.patientid(resource, code="LIMSPSN")
+``
+
+return.
+
+``
+    return row
+``
+
+fillspecimen fills specimen dict from fhir resource.
+
+``/fillspecimen:
+def fillspecimen(resource, what):
+    ``.``
+``
+
+fill in what fields are in what.
+
+``
+    row = {}
+    if "category" in what or "*" in what:
+        row["category"] = fios.category(resource)
+    if "parent_fhirid" in what or "*" in what:
+        row["parent_fhirid"] = fios.parent_fhirid(resource)
+    if "parent_sampleid" in what or "*" in what:
+        row["parent_sampleid"] = fios.parent_sampleid(resource)
+    if "patientid" in what or "*" in what:
+        row["patientid"] = fios.patientid(resource, "LIMSPSN")
+    if "orga" in what or "*" in what:
+        row["orga"] = fios.orga(resource)
+    if "restamount" in what or "*" in what:
+        row["restamount"] = fios.restamount(resource)
+    if "locationpath" in what or "*" in what:
+        row["locationpath"] = fios.locationpath(resource)
+    if "sampleid" in what or "*" in what:
+        row["sampleid"] = fios.sampleid(resource, "SAMPLEID")
+    if "resource_type" in what or "*" in what:
+        row["resource_type"] = fios.resource_type(resource)
+    if "type" in what or "*" in what:
+        row["type"] = fios.type(resource)
+    if "update_with_overwrite" in what or "*" in what:
+        row["update_with_overwrite"] = fios.update_with_overwrite(resource)
+``
+
+return.
+
+``
+    return row
 ``

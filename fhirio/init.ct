@@ -5,26 +5,28 @@ https://simplifier.net/CentraXX-Structures/Specimen/~details.
 
 ``//__init__.py:
 ``import``
-class fhirhelp:
-    ``category``
-    ``extension``
-    ``locationpath``
-    ``parent_fhirid``
-    ``parent_sampleid``
-    ``patientid``    
-    ``orga``
-    ``restamount``
-    ``sampleid``
-    ``type``
-    ``update_with_overwrite``
-    ``identifiers``
-    ``resource_type``
 
+``fhirio``
+``specimen``
+``patient``
+``
+
+fhirio holds the shared fhir methods.
+
+
+``/fhirio:
+class fhirio:
+    ``extension``
+    ``full_url``
+    ``identifiers``
+    ``resource``    
+    ``resource_type``
+    ``update_with_overwrite``
 ``
 
 extension gives the extension with the specified url.
 
-``/extension:
+``/fhirio/extension:
     @staticmethod
     def extension(resource, url:str):
         exts = dig(resource, "extension")
@@ -35,153 +37,17 @@ extension gives the extension with the specified url.
                 return ext
 ``
 
-locationpath gets the sampleLocation. (was lagerort).
+full_url return the full url of a fhir resource.
 
-``/locationpath:
+``/fhirio/full_url:
     @staticmethod
-    def locationpath(resource):
-        ``.``
-``
-
-get the location extension.
-
-``
-        exta = fhirhelp.extension(resource, "https://fhir.centraxx.de/extension/sample/sampleLocation")
-``
-
-get the nested location path extension.
-
-``
-        extb = fhirhelp.extension(exta, "https://fhir.centraxx.de/extension/sample/sampleLocationPath")
-``
-
-return the value.
-
-``
-        return dig(extb, "valueString")
-``
-
-patientid gets the lims psn of the patient. (was limspsn).
-
-``/limspsn:
-    @staticmethod
-    def patientid(resource, code:str="LIMSPSN"):
-        for coding in dig(resource, "subject/identifier/type/coding"):
-            if dig(coding, "code") == code:
-                return dig(resource, "subject/identifier/value")
-``
-
-type returns the material type of the resource. (was material).
-
-``/type:
-    @staticmethod
-    def type(resource):
-        return dig(resource, "type/coding/0/code")
-``
-
-parent_fhirid gets the fhirid of the parent from resource.
-
-``/parent_fhirid:
-    @staticmethod
-    def parent_fhirid(resource):
-        if not "parent" in resource:
-            return None
-        return dig(resource, "parent/0/reference") # there should only be one parent, so one element in the array
-``
-
-parent_sampleid gets the sample id of the parent.
-
-``/parent_sampleid:
-    @staticmethod
-    def parent_sampleid(resource):
-        if "parent" in resource:
-            for parent in dig(resource, "parent"):
-                if not "identifier" in parent:
-                    continue
-                for coding in dig(parent, "identifier/type/coding"):
-                    if dig(coding, "code") == "SAMPLEID":
-                        return dig(parent, "identifier/value") # pid: parent id
-        return None
-``
-
-orga returns the organisation or None if no organisation.
-
-``/orga:
-    @staticmethod
-    def orga(resource):
-        ``.``
-``
-
-get the organization unit extension.
-
-``
-        ext = fhirhelp.extension(resource, "https://fhir.centraxx.de/extension/sample/organizationUnit")
-``
-
-return the value.
-
-``
-        return dig(ext, "valueReference/identifier/value")
-``
-
-restamount returns the restmenge of the sample. (was restmenge)
-
-``/restamount:
-    @staticmethod
-    def restamount(resource):
-        # pres = DictPath(resource)
-        #if not "value" in resource["container"][0]["specimenQuantity"]:
-        #    return None
-        #return resource["container"][0]["specimenQuantity"]["value"]
-        return dig(resource, "container/0/specimenQuantity/value")
-``
-
-category returns the type from resource, 'MASTER', or 'ALIQUOTGROUP' or 'DERIVED' (this corresponds to dtype in the db). (was type).
-
-``/category:
-    @staticmethod
-    def category(resource):
-        ``.``
-``
-
-get the type extension.
-
-``
-        ext = fhirhelp.extension(resource, "https://fhir.centraxx.de/extension/sampleCategory")
-``
-
-return the value.
-
-``
-        return dig(ext, "valueCoding/code")
-``
-
-sampleid returns the sample id of a resource.
-
-``/sampleid:
-    @staticmethod
-    def sampleid(resource, code:str="SAMPLEID"):
-        return dig(fhirhelp.identifiers(resource), code)
-``
-
-update_with_overwrite returns update with overwrite of a resource.
-
-``/update_with_overwrite:
-    @staticmethod
-    def update_with_overwrite(resource) -> bool:
-        ``.``
-``
-
-get the extension for update with overwrite and return its value.
-
-``
-        ext = fhirhelp.extension(resource, "https://fhir.centraxx.de/extension/updateWithOverwrite")
-        return dig(ext, "valueBoolean")
+    def full_url(resource):
+        return dig(resource, "fullUrl")
 ``
 
 identifiers returns the identifiers of a resource as dict keyed by the identifier codes, eg: { "SAMPLEID": "abc", "EXTSAMPLEID": "cde" }
 
-``/identifiers:
+``/fhirio/identifiers:
     @staticmethod
     def identifiers(resource):
         ``.``
@@ -212,16 +78,211 @@ ziehe den code (SAMPLEID, EXTSAMPLEID, etc) aus dem type/coding array.
 
 return.
 
-``/identifiers
+``/fhirio/identifiers
         return out
 ``
 
-resourceType returns the resource type, Specimen or Observation.
 
-``/resource_type:
+resource returns the resource for an entry.
+
+all other methods take resource as argument.
+
+``/fhirio/resource:
     @staticmethod
-    def resourceType(resource):
+    def resource(entry):
+        return dig(entry, "resource")
+``
+
+resource_type returns the resource type, Specimen or Observation. (was resourceType).
+
+``/fhirio/resource_type:
+    @staticmethod
+    def resource_type(resource):
         return dig(resource, "resourceType")
+``
+
+update_with_overwrite returns update with overwrite of a resource.
+
+``/fhirio/update_with_overwrite:
+    @staticmethod
+    def update_with_overwrite(resource) -> bool:
+        ``.``
+``
+
+get the extension for update with overwrite and return its value.
+
+``
+        ext = fhirio.extension(resource, "https://fhir.centraxx.de/extension/updateWithOverwrite")
+        return dig(ext, "valueBoolean")
+``
+
+sample holds the methods specific for sample.
+
+``/specimen:
+class specimen(fhirio):
+    ``category``
+    ``locationpath``
+    ``orga``
+    ``parent_fhirid``
+    ``parent_sampleid``
+    ``patientid``    
+    ``restamount``
+    ``sampleid``
+    ``type``
+``
+
+locationpath gets the sampleLocation. (was lagerort).
+
+``/specimen/locationpath:
+    @staticmethod
+    def locationpath(resource):
+        ``.``
+``
+
+get the location extension.
+
+``
+        exta = fhirio.extension(resource, "https://fhir.centraxx.de/extension/sample/sampleLocation")
+``
+
+get the nested location path extension.
+
+``
+        extb = fhirio.extension(exta, "https://fhir.centraxx.de/extension/sample/sampleLocationPath")
+``
+
+return the value.
+
+``
+        return dig(extb, "valueString")
+``
+
+patientid gets the lims psn of the patient. (was limspsn).
+
+``/specimen/patientid:
+    @staticmethod
+    def patientid(resource, code:str="LIMSPSN"):
+        for coding in dig(resource, "subject/identifier/type/coding"):
+            if dig(coding, "code") == code:
+                return dig(resource, "subject/identifier/value")
+``
+
+type returns the material type of the resource. (was material).
+
+``/specimen/type:
+    @staticmethod
+    def type(resource):
+        return dig(resource, "type/coding/0/code")
+``
+
+parent_fhirid gets the fhirid of the parent from resource.
+
+``/specimen/parent_fhirid:
+    @staticmethod
+    def parent_fhirid(resource):
+        if not "parent" in resource:
+            return None
+        return dig(resource, "parent/0/reference") # there should only be one parent, so one element in the array
+``
+
+parent_sampleid gets the sample id of the parent.
+
+``/specimen/parent_sampleid:
+    @staticmethod
+    def parent_sampleid(resource):
+        if "parent" in resource:
+            for parent in dig(resource, "parent"):
+                if not "identifier" in parent:
+                    continue
+                for coding in dig(parent, "identifier/type/coding"):
+                    if dig(coding, "code") == "SAMPLEID":
+                        return dig(parent, "identifier/value") # pid: parent id
+        return None
+``
+
+orga returns the organisation or None if no organisation.
+
+``/specimen/orga:
+    @staticmethod
+    def orga(resource):
+        ``.``
+``
+
+get the organization unit extension.
+
+``
+        ext = fhirio.extension(resource, "https://fhir.centraxx.de/extension/sample/organizationUnit")
+``
+
+return the value.
+
+``
+        return dig(ext, "valueReference/identifier/value")
+``
+
+restamount returns the restmenge of the sample. (was restmenge)
+
+``/specimen/restamount:
+    @staticmethod
+    def restamount(resource):
+        # pres = DictPath(resource)
+        #if not "value" in resource["container"][0]["specimenQuantity"]:
+        #    return None
+        #return resource["container"][0]["specimenQuantity"]["value"]
+        return dig(resource, "container/0/specimenQuantity/value")
+``
+
+category returns the type from resource, 'MASTER', or 'ALIQUOTGROUP' or 'DERIVED' (this corresponds to dtype in the db). (was type).
+
+``/specimen/category:
+    @staticmethod
+    def category(resource):
+        ``.``
+``
+
+get the type extension.
+
+``
+        ext = fhirio.extension(resource, "https://fhir.centraxx.de/extension/sampleCategory")
+``
+
+return the value.
+
+``
+        return dig(ext, "valueCoding/code")
+``
+
+sampleid returns the sample id of a resource.
+
+``/specimen/sampleid:
+    @staticmethod
+    def sampleid(resource, code:str="SAMPLEID"):
+        return dig(fhirio.identifiers(resource), code)
+``
+
+
+patient holds the methods specific for patient.
+
+``/patient:
+class patient(fhirio):
+    ``patientid``
+    ``orga``
+``
+
+patientid returns the patientid by code.
+
+``/patient/patientid:
+    @staticmethod
+    def patientid(resource, code:str="LIMSPSN"):
+        return dig(fhirio.identifiers(resource), code)
+``
+
+orga returns the organization unit for a patient resource.
+
+``/patient/orga:
+    @staticmethod
+    def orga(resource):
+        return dig(resource, "generalPractitioner/0/identifier/value")
 ``
 
 the imports.

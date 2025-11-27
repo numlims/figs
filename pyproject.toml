@@ -18,7 +18,7 @@ classifiers = [
 ]
 
 [project.scripts]
-fhirio = "fhirio:__main__" # call command tr?
+fhirio = "fhirio:__main__" 
 
 [tool.setuptools]
 packages = ["fhirio"] # keep the package name short so that string constants can be accessed easily
