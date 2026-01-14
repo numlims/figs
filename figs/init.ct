@@ -276,7 +276,6 @@ sampleid returns the sample id of a resource.
 ``/specimen/sampleid:
     @staticmethod
     def sampleid(resource, code:str="SAMPLEID"):
-        print(figs.identifiers(resource))
         return dig(figs.identifiers(resource), code)
 ``
 

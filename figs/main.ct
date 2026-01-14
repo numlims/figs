@@ -84,7 +84,6 @@ get what was asked for.
 
 ``
         whatresource = figs.resource_type(res)
-        print("resource: " + whatresource)
         if whatresource == "Patient":
             row = fillpatient(res, what)
         elif whatresource == "Specimen":
@@ -188,8 +187,6 @@ fill in what fields are in what.
     if "locationpath" in what or "*" in what:
         row["locationpath"] = figs.locationpath(resource)
     if "sampleid" in what or "*" in what:
-        print("search for sampleid")
-        print(resource)
         row["sampleid"] = figs.sampleid(resource, "SAMPLEID")
     if "resource_type" in what or "*" in what:
         row["resource_type"] = figs.resource_type(resource)

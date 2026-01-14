@@ -32,7 +32,6 @@ def main():
         res = figs.resource(entry)
         row = {}
         whatresource = figs.resource_type(res)
-        print("resource: " + whatresource)
         if whatresource == "Patient":
             row = fillpatient(res, what)
         elif whatresource == "Specimen":
@@ -81,8 +80,6 @@ def fillspecimen(resource, what):
     if "locationpath" in what or "*" in what:
         row["locationpath"] = figs.locationpath(resource)
     if "sampleid" in what or "*" in what:
-        print("search for sampleid")
-        print(resource)
         row["sampleid"] = figs.sampleid(resource, "SAMPLEID")
     if "resource_type" in what or "*" in what:
         row["resource_type"] = figs.resource_type(resource)

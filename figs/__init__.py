@@ -22,7 +22,8 @@ class figs:
     @staticmethod
     def identifiers(resource):
         """
-         identifiers returns the identifiers of a resource as dict keyed by the identifier codes, eg: { "SAMPLEID": "abc", "EXTSAMPLEID": "cde" }
+         identifiers returns the identifiers of a resource as dict keyed by the
+         identifier codes, eg: { "SAMPLEID": "abc", "EXTSAMPLEID": "cde" }
         """
         out = {}
         if "identifier" not in resource:
@@ -131,7 +132,6 @@ class specimen(figs):
         """
          sampleid returns the sample id of a resource.
         """
-        print(figs.identifiers(resource))
         return dig(figs.identifiers(resource), code)
     @staticmethod
     def sprec(resource, name:str, key:str="valueCoding"):
