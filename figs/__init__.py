@@ -1,7 +1,7 @@
 # automatically generated, DON'T EDIT. please edit init.ct from where this file stems.
 from dip import dig, dis
 
-class fhirio:
+class figs:
     @staticmethod
     def extension(resource, url:str):
         """
@@ -56,30 +56,37 @@ class fhirio:
         """
          update_with_overwrite returns update with overwrite of a resource.
         """
-        ext = fhirio.extension(resource, "https://fhir.centraxx.de/extension/updateWithOverwrite")
+        ext = figs.extension(resource, "https://fhir.centraxx.de/extension/updateWithOverwrite")
         return dig(ext, "valueBoolean")
-class specimen(fhirio):
+class specimen(figs):
     @staticmethod
     def category(resource):
         """
-         category returns the type from resource, 'MASTER', or 'ALIQUOTGROUP' or 'DERIVED' (this corresponds to dtype in the db). (was type).
+         category returns the type from resource, 'MASTER', or 'ALIQUOTGROUP'
+         or 'DERIVED' (this corresponds to dtype in the db). (was type).
         """
-        ext = fhirio.extension(resource, "https://fhir.centraxx.de/extension/sampleCategory")
+        ext = figs.extension(resource, "https://fhir.centraxx.de/extension/sampleCategory")
         return dig(ext, "valueCoding/code")
+    @staticmethod
+    def container(resource):
+        """
+         container returns the container.
+        """
+        return dig(resource, "container/0/identifier/0/value")
     @staticmethod
     def locationpath(resource):
         """
          locationpath gets the sampleLocation. (was lagerort).
         """
-        exta = fhirio.extension(resource, "https://fhir.centraxx.de/extension/sample/sampleLocation")
-        extb = fhirio.extension(exta, "https://fhir.centraxx.de/extension/sample/sampleLocationPath")
+        exta = figs.extension(resource, "https://fhir.centraxx.de/extension/sample/sampleLocation")
+        extb = figs.extension(exta, "https://fhir.centraxx.de/extension/sample/sampleLocationPath")
         return dig(extb, "valueString")
     @staticmethod
     def orga(resource):
         """
          orga returns the organisation or None if no organisation.
         """
-        ext = fhirio.extension(resource, "https://fhir.centraxx.de/extension/sample/organizationUnit")
+        ext = figs.extension(resource, "https://fhir.centraxx.de/extension/sample/organizationUnit")
         return dig(ext, "valueReference/identifier/value")
     @staticmethod
     def parent_fhirid(resource):
@@ -105,7 +112,6 @@ class specimen(fhirio):
     @staticmethod
     def patientid(resource, code:str="LIMSPSN"):
         """
-         patientid gets the lims psn of the patient. (was limspsn).
         """
         for coding in dig(resource, "subject/identifier/type/coding"):
             if dig(coding, "code") == code:
@@ -125,20 +131,30 @@ class specimen(fhirio):
         """
          sampleid returns the sample id of a resource.
         """
-        return dig(fhirio.identifiers(resource), code)
+        print(figs.identifiers(resource))
+        return dig(figs.identifiers(resource), code)
+    @staticmethod
+    def sprec(resource, name:str, key:str="valueCoding"):
+        """
+         sprec gets sprec of given name with key, default "valueCoding".
+        """
+        sprecext = figs.extension(resource, "https://fhir.centraxx.de/extension/sprec")
+        ext = figs.extension(sprecext, "https://fhir.centraxx.de/extension/sprec/" + code)
+        return dig(ext, key)
+    #`stockprocessing``
     @staticmethod
     def type(resource):
         """
          type returns the material type of the resource. (was material).
         """
         return dig(resource, "type/coding/0/code")
-class patient(fhirio):
+class patient(figs):
     @staticmethod
     def patientid(resource, code:str="LIMSPSN"):
         """
          patientid returns the patientid by code.
         """
-        return dig(fhirio.identifiers(resource), code)
+        return dig(figs.identifiers(resource), code)
     @staticmethod
     def orga(resource):
         """

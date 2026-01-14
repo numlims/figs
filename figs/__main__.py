@@ -1,5 +1,5 @@
 # automatically generated, DON'T EDIT. please edit main.ct from where this file stems.
-from fhirio import fhirio as fio, specimen as fios, patient as fiop
+from figs import specimen as figs, patient as figp
 import json
 import argparse
 import sys
@@ -7,7 +7,7 @@ from dip import dig, dis
 import csv
 def main():
     """
-     main holds a cli for fhirio. it takes a fhir file, resource index and
+     main holds a cli for figs. it takes a fhir file, resource index and
      what should be returned.
     """
     parser = argparse.ArgumentParser()
@@ -29,9 +29,10 @@ def main():
         searchentries = [ entries[int(args.index)] ]
     out = []
     for entry in searchentries:
-        res = fio.resource(entry)
+        res = figs.resource(entry)
         row = {}
-        whatresource = fios.resource_type(res)
+        whatresource = figs.resource_type(res)
+        print("resource: " + whatresource)
         if whatresource == "Patient":
             row = fillpatient(res, what)
         elif whatresource == "Specimen":
@@ -52,13 +53,13 @@ def fillpatient(resource, what):
     """
     row = {}
     if "full_url" in what or "*" in what:
-        row["full_url"] = fiop.full_url(resource)
+        row["full_url"] = figp.full_url(resource)
     if "update_with_overwrite" in what or "*" in what:
-        row["update_with_overwrite"] = fiop.update_with_overwrite(resource)
+        row["update_with_overwrite"] = figp.update_with_overwrite(resource)
     if "orga" in what or "*" in what:
-        row["orga"] = fiop.orga(resource)
+        row["orga"] = figp.orga(resource)
     if "patientid" in what or "*" in what:
-        row["patientid"] = fiop.patientid(resource, code="LIMSPSN")
+        row["patientid"] = figp.patientid(resource, code="LIMSPSN")
     return row
 def fillspecimen(resource, what):
     """
@@ -66,27 +67,29 @@ def fillspecimen(resource, what):
     """
     row = {}
     if "category" in what or "*" in what:
-        row["category"] = fios.category(resource)
+        row["category"] = figs.category(resource)
     if "parent_fhirid" in what or "*" in what:
-        row["parent_fhirid"] = fios.parent_fhirid(resource)
+        row["parent_fhirid"] = figs.parent_fhirid(resource)
     if "parent_sampleid" in what or "*" in what:
-        row["parent_sampleid"] = fios.parent_sampleid(resource)
+        row["parent_sampleid"] = figs.parent_sampleid(resource)
     if "patientid" in what or "*" in what:
-        row["patientid"] = fios.patientid(resource, "LIMSPSN")
+        row["patientid"] = figs.patientid(resource, "LIMSPSN")
     if "orga" in what or "*" in what:
-        row["orga"] = fios.orga(resource)
+        row["orga"] = figs.orga(resource)
     if "restamount" in what or "*" in what:
-        row["restamount"] = fios.restamount(resource)
+        row["restamount"] = figs.restamount(resource)
     if "locationpath" in what or "*" in what:
-        row["locationpath"] = fios.locationpath(resource)
+        row["locationpath"] = figs.locationpath(resource)
     if "sampleid" in what or "*" in what:
-        row["sampleid"] = fios.sampleid(resource, "SAMPLEID")
+        print("search for sampleid")
+        print(resource)
+        row["sampleid"] = figs.sampleid(resource, "SAMPLEID")
     if "resource_type" in what or "*" in what:
-        row["resource_type"] = fios.resource_type(resource)
+        row["resource_type"] = figs.resource_type(resource)
     if "type" in what or "*" in what:
-        row["type"] = fios.type(resource)
+        row["type"] = figs.type(resource)
     if "update_with_overwrite" in what or "*" in what:
-        row["update_with_overwrite"] = fios.update_with_overwrite(resource)
+        row["update_with_overwrite"] = figs.update_with_overwrite(resource)
     return row
 
 sys.exit(main())

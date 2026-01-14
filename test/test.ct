@@ -1,0 +1,41 @@
+test tests figs.
+
+``//test_figs.py:
+``import``
+``test_some``
+``
+
+test_some tries to get a sampleid from a fhir resource with figs.
+
+``/test_some:
+def test_some():
+    ``.``
+``
+
+read a fhir json.
+
+``
+    with open("test/in/2025-09-26_16-12-56_Specimen_p0.json", encoding="latin-1") as f:
+        jsonin = json.load(f)
+``
+
+get the first entry, the resource and the sample id.
+
+``
+        entry = jsonin["entry"][0]
+        res = figs.resource(entry)
+        sampleid = figs.sampleid(res)
+``
+
+assert that the sampleid is as expected.
+
+``
+        assert sampleid == "1477760201"
+``
+
+import.
+
+``/import:
+from figs import specimen as figs
+import json
+``

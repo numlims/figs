@@ -1,16 +1,17 @@
 # name
-name = fhirio
+name = figs
 
-docdir = numlims.github.io/fhirio  # e.g. ~/mydoc.github.io/myprogram
-docmake = numlims.github.io  # e.g. ~/mydoc.github.io
+docdir = ~/numlims.github.io/figs  # e.g. ~/mydoc.github.io/myprogram
+docmake = ~/numlims.github.io  # e.g. ~/mydoc.github.io
 
 # get the version from github tag
 # sort by version; get the last line; delete the v from the version tag cause python build seems to strip it as well
 version = $(shell git tag | sort -V | tail -1 | tr -d v)
 
 all:
-	ct fhirio/main.ct
-	ct fhirio/init.ct
+	ct figs/main.ct
+	ct figs/init.ct
+	ct test/test.ct
 
 .PHONY: build install test doc doc-publish publish publish-update
 
