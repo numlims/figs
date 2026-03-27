@@ -37,12 +37,12 @@ extension gives the extension with the specified url.
                 return ext
 ``
 
-full_url return the full url of a fhir resource.
+full_url return the full url of a fhir entry.
 
 ``/figs/full_url:
     @staticmethod
-    def full_url(resource):
-        return dig(resource, "fullUrl")
+    def full_url(entry):
+        return dig(entry, "fullUrl")
 ``
 
 identifiers returns the identifiers of a resource as dict keyed by the
@@ -122,13 +122,21 @@ specimen holds the methods specific for specimen.
 ``/specimen:
 class specimen(figs):
     ``category``
+    ``centrifugation_date``
+    ``collected_date``
     ``container``
+    ``derival_date``
+    ``initialamount``
+    ``initialamountunit``
     ``locationpath``
     ``orga``
     ``parent_fhirid``
     ``parent_sampleid``
-    ``subjectid``
+    ``patientid``
+    ``received_date``
+    ``reposition_date``
     ``restamount``
+    ``restamountunit``    
     ``sampleid``
     ``sprec``
     #`stockprocessing``
@@ -161,14 +169,37 @@ return the value.
         return dig(extb, "valueString")
 ``
 
-subjectid gets the lims psn of the subject. (was limspsn).
+patientid gets the patient id of the subject.
 
-``/specimen/subjectid:
+``/specimen/patientid:
     @staticmethod
     def patientid(resource, code:str="LIMSPSN"):
         for coding in dig(resource, "subject/identifier/type/coding"):
             if dig(coding, "code") == code:
                 return dig(resource, "subject/identifier/value")
+``
+
+received_date returns the received date.
+
+``/specimen/received_date:
+    @staticmethod
+    def received_date(resource):
+        return dig(resource, "receivedTime")
+``
+
+reposition_date returns the reposition date.
+
+``/specimen/reposition_date:
+    @staticmethod
+    def reposition_date(resource):
+        ``.``
+``
+
+get the reposition date from extension.
+
+``
+        e = figs.extension(resource, "https://fhir.centraxx.de/extension/sample/repositionDate")
+        return dig(e, "valueDateTime")        
 ``
 
 type returns the material type of the resource. (was material).
@@ -224,17 +255,22 @@ return the value.
         return dig(ext, "valueReference/identifier/value")
 ``
 
-restamount returns the restmenge of the sample. (was restmenge)
+restamount returns the restmenge of the sample.
 
 ``/specimen/restamount:
     @staticmethod
     def restamount(resource):
-        # pres = DictPath(resource)
-        #if not "value" in resource["container"][0]["specimenQuantity"]:
-        #    return None
-        #return resource["container"][0]["specimenQuantity"]["value"]
         return dig(resource, "container/0/specimenQuantity/value")
 ``
+
+restamountunit returns unit of the sample's restamount.
+
+``/specimen/restamountunit:
+    @staticmethod
+    def restamountunit(resource):
+        return dig(resource, "container/0/specimenQuantity/unit")
+``
+
 
 category returns the type from resource, 'MASTER', or 'ALIQUOTGROUP'
 or 'DERIVED' (this corresponds to dtype in the db). (was type).
@@ -257,6 +293,30 @@ return the value.
         return dig(ext, "valueCoding/code")
 ``
 
+centrifugation_date returns the centrifugation date.
+
+``/specimen/centrifugation_date:
+    @staticmethod
+    def centrifugation_date(resource):
+        ``.``
+``
+
+get the sprec extension, and from it the pre centrifugation delay date extension.
+
+``
+        sprecext = figs.extension(resource, "https://fhir.centraxx.de/extension/sprec")
+        centriext = figs.extension(sprecext, "https://fhir.centraxx.de/extension/sprec/preCentrifugationDelayDate")
+        return dig(centriext, "valueDateTime")
+``
+
+collected_date returns the collection date.
+
+``/specimen/collected_date:
+    @staticmethod
+    def collected_date(resource):
+        return dig(resource, "collection/collectedDateTime")
+``
+
 container returns the container.
 
 ``/specimen/container:
@@ -270,6 +330,40 @@ for now quick.
 ``
         return dig(resource, "container/0/identifier/0/value")
 ``
+
+derival_date returns the derival date.
+
+``/specimen/derival_date:
+    @staticmethod
+    def derival_date(resource):
+        ``.``
+``
+
+get the date from extension.
+
+``
+        e = figs.extension(resource, "https://fhir.centraxx.de/extension/sample/derivalDate")
+        return dig(e, "valueDateTime")
+``
+
+
+initialamount returns the initial amount of the sample.
+
+``/specimen/initialamount:
+    @staticmethod
+    def initialamount(resource):
+        return dig(resource, "collection/quantity/value")
+``
+
+
+initialamountunit returns the unit of the sample's initial amount.
+
+``/specimen/initialamountunit:
+    @staticmethod
+    def initialamountunit(resource):
+        return dig(resource, "collection/quantity/unit")
+``
+
 
 sampleid returns the sample id of a resource.
 

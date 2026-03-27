@@ -14,11 +14,11 @@ class figs:
             if dig(ext, "url") == url:
                 return ext
     @staticmethod
-    def full_url(resource):
+    def full_url(entry):
         """
-         full_url return the full url of a fhir resource.
+         full_url return the full url of a fhir entry.
         """
-        return dig(resource, "fullUrl")
+        return dig(entry, "fullUrl")
     @staticmethod
     def identifiers(resource):
         """
@@ -69,11 +69,44 @@ class specimen(figs):
         ext = figs.extension(resource, "https://fhir.centraxx.de/extension/sampleCategory")
         return dig(ext, "valueCoding/code")
     @staticmethod
+    def centrifugation_date(resource):
+        """
+         centrifugation_date returns the centrifugation date.
+        """
+        sprecext = figs.extension(resource, "https://fhir.centraxx.de/extension/sprec")
+        centriext = figs.extension(sprecext, "https://fhir.centraxx.de/extension/sprec/preCentrifugationDelayDate")
+        return dig(centriext, "valueDateTime")
+    @staticmethod
+    def collected_date(resource):
+        """
+         collected_date returns the collection date.
+        """
+        return dig(resource, "collection/collectedDateTime")
+    @staticmethod
     def container(resource):
         """
          container returns the container.
         """
         return dig(resource, "container/0/identifier/0/value")
+    @staticmethod
+    def derival_date(resource):
+        """
+         derival_date returns the derival date.
+        """
+        e = figs.extension(resource, "https://fhir.centraxx.de/extension/sample/derivalDate")
+        return dig(e, "valueDateTime")
+    @staticmethod
+    def initialamount(resource):
+        """
+         initialamount returns the initial amount of the sample.
+        """
+        return dig(resource, "collection/quantity/value")
+    @staticmethod
+    def initialamountunit(resource):
+        """
+         initialamountunit returns the unit of the sample's initial amount.
+        """
+        return dig(resource, "collection/quantity/unit")
     @staticmethod
     def locationpath(resource):
         """
@@ -113,20 +146,36 @@ class specimen(figs):
     @staticmethod
     def patientid(resource, code:str="LIMSPSN"):
         """
+         patientid gets the patient id of the subject.
         """
         for coding in dig(resource, "subject/identifier/type/coding"):
             if dig(coding, "code") == code:
                 return dig(resource, "subject/identifier/value")
     @staticmethod
+    def received_date(resource):
+        """
+         received_date returns the received date.
+        """
+        return dig(resource, "receivedTime")
+    @staticmethod
+    def reposition_date(resource):
+        """
+         reposition_date returns the reposition date.
+        """
+        e = figs.extension(resource, "https://fhir.centraxx.de/extension/sample/repositionDate")
+        return dig(e, "valueDateTime")        
+    @staticmethod
     def restamount(resource):
         """
-         restamount returns the restmenge of the sample. (was restmenge)
+         restamount returns the restmenge of the sample.
         """
-        # pres = DictPath(resource)
-        #if not "value" in resource["container"][0]["specimenQuantity"]:
-        #    return None
-        #return resource["container"][0]["specimenQuantity"]["value"]
         return dig(resource, "container/0/specimenQuantity/value")
+    @staticmethod
+    def restamountunit(resource):
+        """
+         restamountunit returns unit of the sample's restamount.
+        """
+        return dig(resource, "container/0/specimenQuantity/unit")
     @staticmethod
     def sampleid(resource, code:str="SAMPLEID"):
         """

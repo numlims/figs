@@ -24,8 +24,7 @@ pip install figs-<version>.whl
 
 edit [`figs/main.ct`](./figs/main.ct) and [`figs/init.ct`](./figs/init.ct).
 
-generate the code from the .ct files with
-[ct](https://github.com/tnustrings/ct).
+generate the code from ct with [ct](https://github.com/tnustrings/ct) or [ct for vscode](https://marketplace.visualstudio.com/items?itemName=tnustrings.codetext).
 
 build and install:
 

@@ -39,7 +39,7 @@ doc-publish:
 
 publish:
 	make build
-	make doc-publish
+	#make doc-publish
 	# move the version tag to the most recent commit
 	git tag -f "v${version}"
 	# delete tag on remote
