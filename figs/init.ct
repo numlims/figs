@@ -1,3 +1,5 @@
+# figs
+
 figs offers help functions for fhir json bundles.
 
 Die Doku für das Specimen-Json ist auf Simplifier,
@@ -9,6 +11,7 @@ https://simplifier.net/CentraXX-Structures/Specimen/~details.
 ``figs``
 ``specimen``
 ``patient``
+``obs``
 ``
 
 figs holds the shared fhir methods.
@@ -419,4 +422,134 @@ the imports.
 from dip import dig, dis
 ``
 
+observation holds the methods specific for observation.
 
+``/obs:
+class observation(figs):
+    ``code``
+    ``subject``
+    ``effectivedate``
+    ``method``
+    ``specimen``
+    ``component``
+``
+
+code returns the name of the observation (finding / messbefund).
+
+``/obs/code:
+    @staticmethod
+    def code(resource):
+        return dig(resource, "code/coding/0/code")
+``
+
+subject returns the patient idcontainer(s) this finding belongs to.
+
+``/obs/subject:
+    @staticmethod
+    def subject(resource):
+        return figs.identifiers(dig(resource, "subject"))
+``
+
+effectivedate returns the effective date time (creation date?).
+
+``/obs/effectivedate:
+    @staticmethod
+    def effectivedate(resource):
+        return dig(resource, "effective_date_time"))
+``
+
+method returns the method (messprofil) code.
+
+``/obs/method:
+    @staticmethod
+    def method(resource):
+        return dig(resource, "method/coding/0/code")
+``
+
+specimen returns the ids of the accompanying sample.
+
+``/obs/specimen:
+    @staticmethod
+    def specimen(resource):
+        return figs.identifiers(dig(resource, "specimen"))
+``
+
+component returs the labvals and the accompanying recorded values.
+
+returns a list of dicts with `type`, `value` and for amount units
+`unit` fields. type can be boolean, quantity, string, dateTime, codeableConcept.
+
+``/obs/component:
+    @staticmethod
+    def component(resource):
+        ``_``
+``
+
+collect the recorded values in a dict.
+
+``
+        out = []
+        component = dig(resource, "component")
+        if component is None:
+            component = []
+        for comp in component:
+            o = {}
+            o["code"] = dig(comp, "code/coding/0/code")
+            ``.``
+``
+
+for boolean.
+
+``
+            if "valueBoolean" in comp:
+                o["value"] = comp["valueBoolean"]
+                o["type"] = "boolean"
+``
+
+for quantity.
+
+``
+            elif "valueQuantity" in comp:
+                o["value"] = dig(comp, "valueQuantity/value")
+                o["unit"] = dig(comp, "valueQuantity/unit");                
+                o["type"] = "quantity"
+``
+
+for string.
+
+``
+            elif "valueString" in comp:
+                o["value"] = comp["valueString"]
+                o["type"] = "string"
+``
+
+for date time.
+
+``
+            elif "valueDateTime" in comp:
+                o["value"] = comp["valueDateTime"]
+                o["type"] = "dateTime"
+``
+
+for catalog and usage entries, collect the codes from the valueCodeableConcept array.
+
+``
+            elif "valueCodeableConcept" in comp:
+                a = []
+                for e in comp["valueCodeableConcept"]:
+                    a.append(dig(e, "code"))
+                o["value"] = a
+                o["type"] = "codeableConcept"
+``
+
+append to out.
+
+``
+            out.append(o)
+``
+
+after the loop, return.
+
+``/obs/component/_:
+    return out
+``

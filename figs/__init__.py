@@ -210,3 +210,70 @@ class patient(figs):
          orga returns the organization unit for a patient resource.
         """
         return dig(resource, "generalPractitioner/0/identifier/value")
+class observation(figs):
+    @staticmethod
+    def code(resource):
+        """
+         code returns the name of the observation (finding / messbefund).
+        """
+        return dig(resource, "code/coding/0/code")
+    @staticmethod
+    def subject(resource):
+        """
+         subject returns the patient idcontainer(s) this finding belongs to.
+        """
+        return figs.identifiers(dig(resource, "subject"))
+    @staticmethod
+    def effectivedate(resource):
+        """
+         effectivedate returns the effective date time (creation date?).
+        """
+        return dig(resource, "effective_date_time"))
+    @staticmethod
+    def method(resource):
+        """
+         method returns the method (messprofil) code.
+        """
+        return dig(resource, "method/coding/0/code")
+    @staticmethod
+    def specimen(resource):
+        """
+         specimen returns the ids of the accompanying sample.
+        """
+        return figs.identifiers(dig(resource, "specimen"))
+    @staticmethod
+    def component(resource):
+        """
+         component returs the labvals and the accompanying recorded values.
+         
+         returns a list of dicts with `type`, `value` and for amount units
+         `unit` fields. type can be boolean, quantity, string, dateTime, codeableConcept.
+        """
+        return out
+        out = []
+        component = dig(resource, "component")
+        if component is None:
+            component = []
+        for comp in component:
+            o = {}
+            o["code"] = dig(comp, "code/coding/0/code")
+            if "valueBoolean" in comp:
+                o["value"] = comp["valueBoolean"]
+                o["type"] = "boolean"
+            elif "valueQuantity" in comp:
+                o["value"] = dig(comp, "valueQuantity/value")
+                o["unit"] = dig(comp, "valueQuantity/unit");                
+                o["type"] = "quantity"
+            elif "valueString" in comp:
+                o["value"] = comp["valueString"]
+                o["type"] = "string"
+            elif "valueDateTime" in comp:
+                o["value"] = comp["valueDateTime"]
+                o["type"] = "dateTime"
+            elif "valueCodeableConcept" in comp:
+                a = []
+                for e in comp["valueCodeableConcept"]:
+                    a.append(dig(e, "code"))
+                o["value"] = a
+                o["type"] = "codeableConcept"
+            out.append(o)
