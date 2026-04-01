@@ -125,7 +125,7 @@ specimen holds the methods specific for specimen.
 ``/specimen:
 class specimen(figs):
     ``category``
-    ``centrifugation_date``
+    ``pre_centrifugation_date``
     ``collected_date``
     ``container``
     ``derival_date``
@@ -142,7 +142,7 @@ class specimen(figs):
     ``restamountunit``    
     ``sampleid``
     ``sprec``
-    #`stockprocessing``
+    ``stockprocessing_date``
     ``type``
 ``
 
@@ -296,11 +296,11 @@ return the value.
         return dig(ext, "valueCoding/code")
 ``
 
-centrifugation_date returns the centrifugation date.
+pre_centrifugation_date returns the pre centrifugation date.
 
-``/specimen/centrifugation_date:
+``/specimen/pre_centrifugation_date:
     @staticmethod
-    def centrifugation_date(resource):
+    def pre_centrifugation_date(resource):
         ``.``
 ``
 
@@ -392,6 +392,24 @@ get the extension inside the sprec extension.
         return dig(ext, key)
 ``
 
+stockprocessing_date returns the stock processing date of the
+resource.
+
+``/specimen/stockprocessing_date:
+    @staticmethod
+    def stockprocessing_date(resource):
+        ``.``
+``
+
+get the sprec extension, and from it the stockprocessing date extension.
+
+``
+        sprecext = figs.extension(resource, "https://fhir.centraxx.de/extension/sprec")
+        centriext = figs.extension(sprecext, "https://fhir.centraxx.de/extension/sprec/stockProcessingDate")
+        return dig(centriext, "valueDateTime")
+``
+
+
 patient holds the methods specific for patient.
 
 ``/patient:
@@ -476,8 +494,9 @@ specimen returns the ids of the accompanying sample.
 
 component returs the labvals and the accompanying recorded values.
 
-returns a list of dicts with `type`, `value` and for amount units
-`unit` fields. type can be boolean, quantity, string, dateTime, codeableConcept.
+returns a dict of labvals keyed by code with `code`, `type`, `value`
+and for amount units `unit` fields. type can be boolean, quantity,
+string, dateTime, codeableConcept.
 
 ``/obs/component:
     @staticmethod
@@ -488,13 +507,14 @@ returns a list of dicts with `type`, `value` and for amount units
 collect the recorded values in a dict.
 
 ``
-        out = []
+        out = {}
         component = dig(resource, "component")
         if component is None:
             component = []
         for comp in component:
             o = {}
-            o["code"] = dig(comp, "code/coding/0/code")
+            code = dig(comp, "code/coding/0/code")
+            o["code"] = code
             ``.``
 ``
 
@@ -542,10 +562,12 @@ for catalog and usage entries, collect the codes from the valueCodeableConcept a
                 o["type"] = "codeableConcept"
 ``
 
-append to out.
+remember to out.
 
 ``
-            out.append(o)
+            if code in out:
+                raise Exception(f"{code} already in out dict.")
+            out[code] = o
 ``
 
 after the loop, return.

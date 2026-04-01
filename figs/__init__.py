@@ -69,9 +69,9 @@ class specimen(figs):
         ext = figs.extension(resource, "https://fhir.centraxx.de/extension/sampleCategory")
         return dig(ext, "valueCoding/code")
     @staticmethod
-    def centrifugation_date(resource):
+    def pre_centrifugation_date(resource):
         """
-         centrifugation_date returns the centrifugation date.
+         pre_centrifugation_date returns the pre centrifugation date.
         """
         sprecext = figs.extension(resource, "https://fhir.centraxx.de/extension/sprec")
         centriext = figs.extension(sprecext, "https://fhir.centraxx.de/extension/sprec/preCentrifugationDelayDate")
@@ -190,7 +190,15 @@ class specimen(figs):
         sprecext = figs.extension(resource, "https://fhir.centraxx.de/extension/sprec")
         ext = figs.extension(sprecext, "https://fhir.centraxx.de/extension/sprec/" + code)
         return dig(ext, key)
-    #`stockprocessing``
+    @staticmethod
+    def stockprocessing_date(resource):
+        """
+         stockprocessing_date returns the stock processing date of the
+         resource.
+        """
+        sprecext = figs.extension(resource, "https://fhir.centraxx.de/extension/sprec")
+        centriext = figs.extension(sprecext, "https://fhir.centraxx.de/extension/sprec/stockProcessingDate")
+        return dig(centriext, "valueDateTime")
     @staticmethod
     def type(resource):
         """
