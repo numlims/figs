@@ -455,7 +455,7 @@ effectivedate returns the effective date time (creation date?).
 ``/obs/effectivedate:
     @staticmethod
     def effectivedate(resource):
-        return dig(resource, "effective_date_time"))
+        return dig(resource, "effective_date_time")
 ``
 
 method returns the method (messprofil) code.

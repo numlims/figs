@@ -228,7 +228,7 @@ class observation(figs):
         """
          effectivedate returns the effective date time (creation date?).
         """
-        return dig(resource, "effective_date_time"))
+        return dig(resource, "effective_date_time")
     @staticmethod
     def method(resource):
         """
