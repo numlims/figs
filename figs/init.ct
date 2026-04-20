@@ -506,7 +506,7 @@ string, dateTime, codeableConcept.
 
 collect the recorded values in a dict.
 
-``
+``_:
         out = {}
         component = dig(resource, "component")
         if component is None:
@@ -572,6 +572,6 @@ remember to out.
 
 after the loop, return.
 
-``/obs/component/_:
-    return out
+``/obs/component/_
+        return out
 ``

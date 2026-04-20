@@ -27,6 +27,7 @@ parse the arguments.
     parser.add_argument("file", help="fhir json file")    
     parser.add_argument("--csv", help="write output to named csv file")
     parser.add_argument("-e", help="input file encoding")
+    versionflag.flag(parser, "figs")
 ``
 
 parse the arguments.
@@ -132,6 +133,7 @@ import argparse
 import sys
 from dip import dig, dis
 import csv
+import versionflag
 ``
 
 fillpatient fills patient dict from resource.

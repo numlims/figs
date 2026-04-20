@@ -10,6 +10,12 @@ sampleid = figs.sampleid(res)
 
 api doc [here](https://numlims.github.io/figs/).
 
+## fhir spec
+
+specimen: [simplifier.net/centraxx-structures/specimen](https://simplifier.net/centraxx-structures/specimen)\ 
+patient: [simplifier.net/centraxx-structures/patient](https://simplifier.net/centraxx-structures/patient)\
+observation: [simplifier.net/centraxx-structures/observation](https://simplifier.net/centraxx-structures/observation)\
+
 ## install
 
 download figs whl from

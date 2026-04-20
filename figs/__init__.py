@@ -254,17 +254,18 @@ class observation(figs):
         """
          component returs the labvals and the accompanying recorded values.
          
-         returns a list of dicts with `type`, `value` and for amount units
-         `unit` fields. type can be boolean, quantity, string, dateTime, codeableConcept.
+         returns a dict of labvals keyed by code with `code`, `type`, `value`
+         and for amount units `unit` fields. type can be boolean, quantity,
+         string, dateTime, codeableConcept.
         """
-        return out
-        out = []
+        out = {}
         component = dig(resource, "component")
         if component is None:
             component = []
         for comp in component:
             o = {}
-            o["code"] = dig(comp, "code/coding/0/code")
+            code = dig(comp, "code/coding/0/code")
+            o["code"] = code
             if "valueBoolean" in comp:
                 o["value"] = comp["valueBoolean"]
                 o["type"] = "boolean"
@@ -284,4 +285,7 @@ class observation(figs):
                     a.append(dig(e, "code"))
                 o["value"] = a
                 o["type"] = "codeableConcept"
-            out.append(o)
+            if code in out:
+                raise Exception(f"{code} already in out dict.")
+            out[code] = o
+        return out
