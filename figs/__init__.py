@@ -281,7 +281,7 @@ class observation(figs):
                 o["type"] = "dateTime"
             elif "valueCodeableConcept" in comp:
                 a = []
-                for e in comp["valueCodeableConcept"]:
+                for e in dig(comp, "valueCodeableConcept/coding"):
                     a.append(dig(e, "code"))
                 o["value"] = a
                 o["type"] = "codeableConcept"

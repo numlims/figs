@@ -5,6 +5,7 @@ import argparse
 import sys
 from dip import dig, dis
 import csv
+import versionflag
 def main():
     """
      main holds a cli for figs. it takes a fhir file, resource index and
@@ -17,6 +18,7 @@ def main():
     parser.add_argument("file", help="fhir json file")    
     parser.add_argument("--csv", help="write output to named csv file")
     parser.add_argument("-e", help="input file encoding")
+    versionflag.flag(parser, "figs")
     args = parser.parse_args()
     what = args.what.split("|")
     jsonin = None
